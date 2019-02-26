@@ -1,10 +1,18 @@
 const sequelize = require('sequelize');
 
 module.exports.initialize = function() {
-    return new sequelize('uni', 'root', '', {
+  const define = {
+      freezeTableName: true,
+      underscored: true,
+
+  }
+
+    return new sequelize('assignment_week_9', 'root', '', {
         host: 'localhost',
         dialect: 'mysql',
         operatorsAliases: false,
+        define,
+        
       
         pool: {
           max: 5,

@@ -1,10 +1,12 @@
 const db = require('./database/db')
-const zipcode = require('./database/models/zipcode.js')
+let zipcode = require('./database/models/zipcode.js').model
+let user = require('./database/models/user.js').model
+
 const dataImport = require('./database/data-import')
+const api = require('./api.js')
+
 
 let connection;
-let zipcodeModel;
-
 
 
 function initialize() {
@@ -17,17 +19,21 @@ function initialize() {
         console.log('Failed authenticating the database')
     });
 
-    zipcode.initialize(connection, (zipcode) => {
-        zipcodeModel = zipcode;
+    zipcode = connection.define('zipcode', zipcode)
+    user = connection.define('user', user)
+    
 
-        dataImport.getZipCodes((zipcodes) => {
-            zipcodeModel.bulkCreate(zipcodes)
-            .then(() => {
-                console.log("Zipcodes created")
-            })
 
-        })
-    });
+    dataImport.getZipCodes((zipcodes) => {
+        zipcode.bulkCreate(zipcodes)
+    })
+    
+    connection.sync().then(() => {
+        console.log('DB Synced..')
+    })
+
+    api.initialize(zipcode, user);
+
 }
 
 initialize();
