@@ -40,9 +40,9 @@ function initialize() {
 
    // itemSeed.seed(item)
 
-    dataImport.getZipCodes((zipcodes) => {
-        zipcode.bulkCreate(zipcodes)
-    })
+    // dataImport.getZipCodes((zipcodes) => {
+    //     zipcode.bulkCreate(zipcodes)
+    // }) 
     
     connection.sync().then(() => {
         console.log('DB Synced..')

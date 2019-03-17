@@ -35,7 +35,8 @@ module.exports.initialize = function(zipcode, user, item, basket) {
     basketItemModel = basket
 
     app.all('/api/*', (req, res, next) => {
-        authenticateRequest(req, res, next)
+       // authenticateRequest(req, res, next)
+       next();
       
     })
 
@@ -54,7 +55,11 @@ function authenticateRequest(req, res, next) {
         const decoded = webTokens.verifyToken(token)
         
         res.locals.user = decoded;
-        next()
+        if (res.locals.user) {
+          next()
+        }
+
+        
       } else {
         res.status(401).json({message: 'Please provide valid token'})
 
@@ -70,7 +75,7 @@ function authenticateRequest(req, res, next) {
 function endpoints() {
 
     app.post('/api/signup', (req, res) => {
-        userEndpoint.postUser(userModel, req, res)
+        userEndpoint.postUser(userModel, zipcodeModel, req, res)
 
     })
 

@@ -2,15 +2,33 @@ const converter = require('@ridi/object-case-converter');
 
 const webTokens = require('../auth/web-tokens')
 
-module.exports.postUser = function(userModel, req, res) {
+module.exports.postUser = function(userModel, zipcodeModel, req, res) {
     const user = converter.decamelize(req.body);
 
-    userModel.create(user).then((result) => {
-        res.json({message: "User successfully created"})
+    zipcodeModel.findOne({
+      where: {
+        postnr: user.postnr
+      }
+    }).then((result) => {
+      if (result) {
+        userModel.create(user).then((result) => {
+          res.json({message: "User successfully created"})
+  
+      }).catch((errorResult) => {
+          res.json({message: "Fejl med oprettelse"})
+      })
+        
+      } else {
+        res.status(404).json({message: "Zipcode does not exist", type: "zip_invalid"})
 
-    }).catch((errorResult) => {
-        res.send(errorResult)
+      }
+      
+
+    }).catch((zipErrorResult) => {
+      res.status(404).json({mesasge: "Zipcode does not exist"})
     })
+
+    
 }
 
 module.exports.login = function(userModel, req, res) {
